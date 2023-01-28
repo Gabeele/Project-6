@@ -94,8 +94,16 @@ int main()
 			// LOGGER: TotalPackageSize 
 
 			fValue = (float)atof(RxBuffer);	// Assigns the float value from the buffer
+
+			startTime = chrono::system_clock::now();
 			UpdateData(0, fValue);	// Calls to update
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(0);		// Calculates the average
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
 
 			endTime3 = chrono::system_clock::now();
 			// LOGGER: Time of parsing
@@ -119,8 +127,16 @@ int main()
 			// LOGGER: TotalPackageSize 
 
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(1, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(1);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
 
 			endTime3 = chrono::system_clock::now();
 			// LOGGER: Time of parsing
@@ -143,8 +159,16 @@ int main()
 			// LOGGER: TotalPackageSize 
 
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(2, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(2);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
 
 			endTime3 = chrono::system_clock::now();
 			// LOGGER: Time of parsing
@@ -166,8 +190,16 @@ int main()
 			// LOGGER: TotalPackageSize 
 
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(3, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(3);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
 
 			endTime3 = chrono::system_clock::now();
 			// LOGGER: Time of parsing
@@ -187,8 +219,16 @@ int main()
 			// LOGGER: TotalPackageSize 
 
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(4, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(4);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
 
 			endTime3 = chrono::system_clock::now();
 			// LOGGER: Time of parsing
@@ -210,8 +250,16 @@ int main()
 			// LOGGER: TotalPackageSize 
 
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(5, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(5);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
 
 			endTime3 = chrono::system_clock::now();
 			// LOGGER: Time of parsing
@@ -233,8 +281,16 @@ int main()
 			// LOGGER: TotalPackageSize 
 
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(6, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(6);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
 
 			endTime3 = chrono::system_clock::now();
 			// LOGGER: Time of parsing

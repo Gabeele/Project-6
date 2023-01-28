@@ -16,10 +16,10 @@ class Logger {
 
 		//Public class members
 
-		ofstream fileStream;
-		string fileName;
-		string fileLocation = "./Logs";
-		int fileSize;
+		ofstream logFileStream;
+		string logFileName;
+		string logFileLocation;
+		int logFileSize;
 
 		//Constructor
 		Logger();
@@ -27,5 +27,8 @@ class Logger {
 	
 		//Public utility methods
 		void PrintToLogFile(string);
+		void PrintToLogFile(string, chrono::system_clock::time_point, chrono::system_clock::time_point);
+		void PrintToLogFile(string, int);
+		void PrintToLogFile(string, std::chrono::duration<double>);
 
 };

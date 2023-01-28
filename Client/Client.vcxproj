@@ -21,12 +21,14 @@
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="LoggingConfiguration.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="DataFile.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="LoggingConfiguration.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Client\Logger.cpp" />
+    <ClCompile Include="..\Client\LoggingConfiguration.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Client\Logger.h" />
+    <ClInclude Include="..\Client\LoggingConfiguration.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

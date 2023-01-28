@@ -4,22 +4,26 @@
 
 Logger::Logger() {
 
-	this->fileName = "Unset";
-	this->fileSize = NULL;
+	this->logFileName = "Unset";
+	this->logFileSize = NULL;
 
 }
 
-Logger::Logger(string fileName) {
+Logger::Logger(string directoryName) {
 
-	auto time = std::chrono::system_clock::now();
-	std::time_t endtime = std::chrono::system_clock::to_time_t(time);
+	this->logFileLocation = "./Logs/" + directoryName;
 
-	cout << std::ctime(&endtime);
+	//auto time = std::chrono::system_clock::now();
+	std::time_t endtime = std::time(0);
+	std::tm* now = std::localtime(&endtime);
 
-	this->fileName = fileName + "_" + (std::ctime(&endtime)) + ".txt";
+	this->logFileName = directoryName + '_' + to_string(1900 + now->tm_year) + '-' + to_string(1 + now->tm_mon) + '-' + to_string(now->tm_mday)
+		+ '-' + to_string(now->tm_hour) + '-' + to_string(now->tm_min) + '-' + to_string(now->tm_sec) + ".txt";
+	
+	string filePath = this->logFileLocation + "/" + this->logFileName;
 
-	fileStream.open(this->fileLocation + "/" + this->fileName);
-	if (!fileStream) {
+	logFileStream.open(filePath);
+	if (!logFileStream) {
 		cout << "Failed to open log file.";
 	}
 
@@ -27,7 +31,35 @@ Logger::Logger(string fileName) {
 
 void Logger::PrintToLogFile(string toBePrinted) {
 
-	this->fileStream << toBePrinted << endl;
+	this->logFileStream << toBePrinted << endl;
+
+	return;
+
+}
+
+void Logger::PrintToLogFile(string toBePrinted, chrono::system_clock::time_point startTime, chrono::system_clock::time_point endTime) {
+
+	std::chrono::duration<double> elapsedTime = endTime - startTime;
+
+	string strDuration = to_string(elapsedTime.count());
+
+	this->logFileStream << toBePrinted << " " << strDuration << endl;
+
+	return;
+
+}
+
+void Logger::PrintToLogFile(string toBePrinted, int metricToPrint) {
+
+	this->logFileStream << toBePrinted << " " << metricToPrint << endl;
+
+	return;
+
+}
+
+void Logger::PrintToLogFile(string toBePrinted, std::chrono::duration<double> metricToPrint) {
+
+	this->logFileStream << toBePrinted << " " << to_string(metricToPrint.count()) << endl;
 
 	return;
 

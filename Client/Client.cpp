@@ -4,25 +4,51 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <chrono>	// Inlcuded in Logger
-
 #include "Logger.h"
+#include "LoggingConfiguration.h"
 
 using namespace std;
 
 unsigned int GetSize();
 
 // Performance Metrics 
-int NumberOfBytesFromFileRead = 0;
 int NumbeOfPacketsSent = 0;
 int NumbeOfPacketsRecv = 0;
 int TotalPacketSizeSent = 0;
+
+//File IO metrics.
+int NumTimesFilesOpen = 0;
+int NumberOfBytesReadFromFile = 0;
+int byteSizeOfLargestLineRead = 0; //Bytesize of line reads captured to give context to the line read times in future iterations of the code base.
+	//std::chrono::duration<double> totalCurrentLineReadTime; //Time it takes for the intended line to be read.
+	//std::chrono::duration<double> totalLineIndexingTime; //Time it takes for the program to 'get it's bearings' and arrive at the correct line.
+std::chrono::duration<double> totalLineReadTime; // Sum of above two metrics.
+	//std::chrono::duration<double> maxCurrentLineReadTime;
+	//std::chrono::duration<double> maxLineIndexingTime;
+std::chrono::duration<double> maxLineReadTime;
+	//std::chrono::duration<double> avgCurrentLineReadTime;
+	//std::chrono::duration<double> avgLineIndexingTime;
+std::chrono::duration<double> avgLineReadTime;
+
 chrono::time_point<chrono::system_clock> startTime, endTime;
 chrono::time_point<chrono::system_clock> startTime2, endTime2;
 
+Logger fileIOLogger = Logger("FileIO");
+//Logger fileIOLogger = Logger("FileIO");
+//Logger fileIOLogger = Logger("FileIO");
+//Logger fileIOLogger = Logger("FileIO");
+//Logger fileIOLogger = Logger("FileIO");
 
 int main()
 {
+	//Check conditions to determine which performance testing configuration we are currently executing in.
+#if FILEIOTESTING == true
+	cout << "Testing File IO\n";
+#endif
+
+#if OTHERTESTING == true
+	cout << "Other Testing\n";
+#endif
 
 	WSADATA wsaData;
 	SOCKET ClientSocket;
@@ -31,7 +57,6 @@ int main()
 	vector<string> ParamNames;
 	char Rx[128];
 
-
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	ClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);	// IPv4 TCP protocol 
 	SvrAddr.sin_family = AF_INET;
@@ -39,32 +64,42 @@ int main()
 	SvrAddr.sin_addr.s_addr = inet_addr("127.0.0.1");	//Localhost
 	connect(ClientSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
 
+	//Opens at line 59, ends at line 68. Captures the time it takes to get the file size by the GetSize() function as well as the number of bytes read from the file, then logs the results.
+#if FILEIOTESTING == true
 	startTime = chrono::system_clock::now();
-	uiSize = GetSize();	// Obtains the number of lines in the file
-	endTime = chrono::system_clock::now();
-	// LOGGER: endTime-startTime = time taken
-	// LOGGER: NumberOfBytesFromFileRead
+#endif
 
+	uiSize = GetSize();	// Obtains the number of lines in the file
+
+#if FILEIOTESTING == true
+	endTime = chrono::system_clock::now();
+	fileIOLogger.PrintToLogFile("Total seconds taken by GetSize() function call:", startTime, endTime);
+	fileIOLogger.PrintToLogFile("Number of Bytes read from file:", NumberOfBytesReadFromFile);
+#endif
 
 	for (unsigned int l = 0; l < uiSize; l++)	// For each line in the file. l = line NOT 1!
 	{
 		string strInput;
-		startTime = chrono::system_clock::now();
 		ifstream ifs("DataFile.txt");
-		endTime = chrono::system_clock::now();
-		// LOGGER: endTime-startTime = time taken
 
-		for (unsigned int iStart = 0; iStart < l; iStart++) {	// Finds the starting line by running through the file after the previously read line
-			startTime = chrono::system_clock::now();
-			getline(ifs, strInput);
-			endTime = chrono::system_clock::now();
-		}
-		// LOGGER: endTime-startTime = time taken
-		// LOGGER: Number of Byte per FILE IO Call sizeof(strInput)s
-
+		//Opens at line 77, ends at line 172. Increments the file opened counter each iteration of the loop. Logs the number of times the file was opened.
+		//Starts the clock to measure the amount of time it takes to read the current line in one iteration of the loop.
+#if FILEIOTESTING == true
+		NumTimesFilesOpen++;
 		startTime = chrono::system_clock::now();
+#endif
+		for (unsigned int iStart = 0; iStart < l; iStart++) {	// Finds the starting line by running through the file after the previously read line
+			getline(ifs, strInput);
+		}
+
+#if FILEIOTESTING == true
+		startTime2 = chrono::system_clock::now();
+#endif
 		getline(ifs, strInput);
+#if FILEIOTESTING == true
+		endTime2 = chrono::system_clock::now();
 		endTime = chrono::system_clock::now();
+#endif
 		// LOGGER: endTime-startTime = time taken
 		// LOGGER: Number of Byte per FILE IO Call sizeof(strInput)
 		if (l > 0)	// Only after the first iteration will this execute
@@ -133,7 +168,29 @@ int main()
 			}
 		}
 		ifs.close();	 // Closes the file
+
+
+		//Avg time of line read
+		//avg size of line read
+		//longest line read
+		//long time to read a line
+#if FILEIOTESTING == true
+		std::chrono::duration<double> elapsedTime = endTime - startTime;
+		totalLineReadTime += (elapsedTime);
+		if (elapsedTime > maxLineReadTime) {
+			maxLineReadTime = elapsedTime;
+		}
+		avgLineReadTime = totalLineReadTime / NumTimesFilesOpen;
+#endif
+
 	}
+
+#if FILEIOTESTING == true
+	fileIOLogger.PrintToLogFile("totalLineReadTime:", totalLineReadTime);
+	fileIOLogger.PrintToLogFile("maxLineReadTime:", maxLineReadTime);
+	fileIOLogger.PrintToLogFile("avgLineReadTime:", avgLineReadTime);
+	fileIOLogger.PrintToLogFile("Number of times data file was open:", NumTimesFilesOpen);
+#endif
 
 	closesocket(ClientSocket);
 	WSACleanup();
@@ -152,15 +209,13 @@ unsigned int GetSize()
 		while (!ifs.eof())
 		{
 
-			startTime = chrono::system_clock::now();
 			getline(ifs, strInput);
-			endTime = chrono::system_clock::now();
-			// LOGGER: endTime-startTime = time taken
 
-			NumberOfBytesFromFileRead += sizeof(strInput);
-			// LOGGER: Number of Byte per FILE IO Call sizeof(strInput)
-
-
+			int currentLineBytesRead = strInput.length() * sizeof(char);
+			NumberOfBytesReadFromFile += currentLineBytesRead;
+			if (byteSizeOfLargestLineRead < currentLineBytesRead) {
+				byteSizeOfLargestLineRead = currentLineBytesRead;
+			}
 
 			uiSize++;
 		}

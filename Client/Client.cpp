@@ -4,12 +4,16 @@
 #include <fstream>
 #include <string>
 #include <vector>
+
+#include "Logger.h"
+
 using namespace std;
 
 unsigned int GetSize();
 
 int main()
 {
+
 	WSADATA wsaData;
 	SOCKET ClientSocket;
 	sockaddr_in SvrAddr;

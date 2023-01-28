@@ -4,9 +4,15 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <chrono>	// Inlcuded in Logger
 using namespace std;
 
 unsigned int GetSize();
+
+// Performance Metrics 
+int NumberOfBytesFromFileRead = 0;
+chrono::time_point<chrono::system_clock> startTime, endTime;
+
 
 int main()
 {
@@ -17,6 +23,7 @@ int main()
 	vector<string> ParamNames;
 	char Rx[128];
 
+
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	ClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);	// IPv4 TCP protocol 
 	SvrAddr.sin_family = AF_INET;
@@ -24,15 +31,34 @@ int main()
 	SvrAddr.sin_addr.s_addr = inet_addr("127.0.0.1");	//Localhost
 	connect(ClientSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
 
+	startTime = chrono::system_clock::now();
 	uiSize = GetSize();	// Obtains the number of lines in the file
+	endTime = chrono::system_clock::now();
+	// LOGGER: endTime-startTime = time taken
+	// LOGGER: NumberOfBytesFromFileRead
+
+
 	for (unsigned int l = 0; l < uiSize; l++)	// For each line in the file. l = line NOT 1!
 	{
 		string strInput;
+		startTime = chrono::system_clock::now();
 		ifstream ifs("DataFile.txt");
-		for (unsigned int iStart = 0; iStart < l; iStart++)	// Finds the starting line by running through the file after the previously read line
-			getline(ifs, strInput);
+		endTime = chrono::system_clock::now();
+		// LOGGER: endTime-startTime = time taken
 
-		getline(ifs, strInput);	// Gets the current line
+		for (unsigned int iStart = 0; iStart < l; iStart++) {	// Finds the starting line by running through the file after the previously read line
+			startTime = chrono::system_clock::now();
+			getline(ifs, strInput);
+			endTime = chrono::system_clock::now();
+		}
+		// LOGGER: endTime-startTime = time taken
+		// LOGGER: Number of Byte per FILE IO Call sizeof(strInput)s
+
+		startTime = chrono::system_clock::now();
+		getline(ifs, strInput);
+		endTime = chrono::system_clock::now();
+		// LOGGER: endTime-startTime = time taken
+		// LOGGER: Number of Byte per FILE IO Call sizeof(strInput)
 		if (l > 0)	// Only after the first iteration will this execute
 		{
 			size_t offset, preOffset;
@@ -85,7 +111,15 @@ unsigned int GetSize()
 	{
 		while (!ifs.eof())
 		{
+
+			startTime = chrono::system_clock::now();
 			getline(ifs, strInput);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			// LOGGER: Number of Byte per FILE IO Call sizeof(strInput)
+
+			NumberOfBytesFromFileRead += sizeof(strInput);
+
 			uiSize++;
 		}
 	}

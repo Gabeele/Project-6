@@ -152,9 +152,11 @@ unsigned int GetSize()
 			getline(ifs, strInput);
 			endTime = chrono::system_clock::now();
 			// LOGGER: endTime-startTime = time taken
-			// LOGGER: Number of Byte per FILE IO Call sizeof(strInput)
 
 			NumberOfBytesFromFileRead += sizeof(strInput);
+			// LOGGER: Number of Byte per FILE IO Call sizeof(strInput)
+
+
 
 			uiSize++;
 		}

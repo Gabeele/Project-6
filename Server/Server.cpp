@@ -16,6 +16,8 @@ int NumbeOfPacketsSent = 0;
 int NumbeOfPacketsRecv = 0;
 int TotalPacketSizeRecv = 0;
 chrono::time_point<chrono::system_clock> startTime, endTime;
+chrono::time_point<chrono::system_clock> startTime2, endTime2;
+chrono::time_point<chrono::system_clock> startTime3, endTime3;
 
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
@@ -72,9 +74,12 @@ int main()
 		NumbeOfPacketsSent++;
 		// LOGGER: Number of Packets sent
 
+		startTime2 = chrono::system_clock::now();
 		// Checks what the buffer's string has
 		if (strcmp(RxBuffer, "ACCELERATION BODY X") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer)); // Clearing RxBuffer
 
 			startTime = chrono::system_clock::now();
@@ -91,9 +96,15 @@ int main()
 			fValue = (float)atof(RxBuffer);	// Assigns the float value from the buffer
 			UpdateData(0, fValue);	// Calls to update
 			fValue = CalcAvg(0);		// Calculates the average
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
+
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
 			startTime = chrono::system_clock::now();
@@ -110,9 +121,14 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			UpdateData(1, fValue);
 			fValue = CalcAvg(1);
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Z") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
 			startTime = chrono::system_clock::now();
@@ -129,9 +145,14 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			UpdateData(2, fValue);
 			fValue = CalcAvg(2);
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "TOTAL WEIGHT") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
 			startTime = chrono::system_clock::now();
@@ -147,6 +168,9 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			UpdateData(3, fValue);
 			fValue = CalcAvg(3);
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "PLANE ALTITUDE") == 0)
 		{
@@ -165,9 +189,14 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			UpdateData(4, fValue);
 			fValue = CalcAvg(4);
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
 			startTime = chrono::system_clock::now();
@@ -183,9 +212,14 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			UpdateData(5, fValue);
 			fValue = CalcAvg(5);
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
 			startTime = chrono::system_clock::now();
@@ -201,9 +235,14 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			UpdateData(6, fValue);
 			fValue = CalcAvg(6);
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else
 		{
+			startTime3 = chrono::system_clock::now();
+
 			// Missing time stamp -- will lead to the time stampe being printed at 0.0000 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
@@ -218,7 +257,12 @@ int main()
 			// LOGGER: TotalPackageSize 
 
 			fValue = 0.0;
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
+		endTime2 = chrono::system_clock::now();
+		// LOGGER: Total time to parse packet 
 
 		// Sends the average back to the client
 		char Tx[128];

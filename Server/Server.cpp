@@ -1,5 +1,6 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
+#include <chrono>	// Inlcuded in Logger
 #pragma comment(lib, "Ws2_32.lib")
 using namespace std;
 
@@ -9,6 +10,14 @@ struct StorageTypes
 	float* pData;			// The actual value
 };
 StorageTypes RxData[7];		// Creates 8 RxData units
+
+// Preformance metrics 
+int NumbeOfPacketsSent = 0;
+int NumbeOfPacketsRecv = 0;
+int TotalPacketSizeRecv = 0;
+chrono::time_point<chrono::system_clock> startTime, endTime;
+chrono::time_point<chrono::system_clock> startTime2, endTime2;
+chrono::time_point<chrono::system_clock> startTime3, endTime3;
 
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
@@ -47,77 +56,280 @@ int main()
 	{
 		float fValue = 0;
 		memset(RxBuffer, 0, sizeof(RxBuffer));	// Making the RxBuffer 0
+
+		startTime = chrono::system_clock::now();
 		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Reveices the buffer
+		endTime = chrono::system_clock::now();
+		// LOGGER: endTime-startTime = time taken
+		NumbeOfPacketsRecv++;
+		// LOGGER: NumberOfPacketRecv
+
+		TotalPacketSizeRecv += sizeof(RxBuffer);
+		// LOGGER: TotalPackageSize 
+
+		startTime = chrono::system_clock::now();
 		send(ConnectionSocket, "ACK", sizeof("ACK"), 0);	// Sends an ackknowledgment
+		endTime = chrono::system_clock::now();
+		// LOGGER: endTime-startTime = time taken
+		NumbeOfPacketsSent++;
+		// LOGGER: Number of Packets sent
+
+		startTime2 = chrono::system_clock::now();
 		// Checks what the buffer's string has
 		if (strcmp(RxBuffer, "ACCELERATION BODY X") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer)); // Clearing RxBuffer
+
+			startTime = chrono::system_clock::now();
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);	// Assigns the float value from the buffer
+
+			startTime = chrono::system_clock::now();
 			UpdateData(0, fValue);	// Calls to update
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(0);		// Calculates the average
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
+
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(1, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(1);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Z") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(2, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(2);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "TOTAL WEIGHT") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(3, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(3);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "PLANE ALTITUDE") == 0)
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(4, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(4);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(5, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(5);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0)
 		{
+			startTime3 = chrono::system_clock::now();
+
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
+
+			startTime = chrono::system_clock::now();
 			UpdateData(6, fValue);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			startTime = chrono::system_clock::now();
 			fValue = CalcAvg(6);
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
 		else
 		{
+			startTime3 = chrono::system_clock::now();
+
 			// Missing time stamp -- will lead to the time stampe being printed at 0.0000 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = 0.0;
+
+			endTime3 = chrono::system_clock::now();
+			// LOGGER: Time of parsing
 		}
+		endTime2 = chrono::system_clock::now();
+		// LOGGER: Total time to parse packet 
 
 		// Sends the average back to the client
 		char Tx[128];
 		sprintf_s(Tx, "%f", fValue);
+
+		startTime = chrono::system_clock::now();
 		send(ConnectionSocket, Tx, sizeof(Tx), 0);
+		endTime = chrono::system_clock::now();
+		// LOGGER: endTime-startTime = time taken
+		NumbeOfPacketsSent++;
+		// LOGGER: Number of Packets sent
 	}
 
 	closesocket(ConnectionSocket);	//closes incoming socket

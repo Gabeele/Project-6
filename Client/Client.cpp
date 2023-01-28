@@ -11,7 +11,11 @@ unsigned int GetSize();
 
 // Performance Metrics 
 int NumberOfBytesFromFileRead = 0;
+int NumbeOfPacketsSent = 0;
+int NumbeOfPacketsRecv = 0;
+int TotalPacketSizeSent = 0;
 chrono::time_point<chrono::system_clock> startTime, endTime;
+chrono::time_point<chrono::system_clock> startTime2, endTime2;
 
 
 int main()
@@ -67,12 +71,44 @@ int main()
 			//while (offset != std::string::npos)
 			while(iParamIndex != 8)	// Sets 8 iterations of the data file 
 			{
+				
 				offset = strInput.find_first_of(',', preOffset+1);	// Finds the first comma and sets the offset to the index of the comma + 1 
 				string strTx = strInput.substr(preOffset+1, offset - (preOffset+1));
+
+				startTime = chrono::system_clock::now();
 				send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);		// Sends the current parameter title (What the data is)
+				endTime = chrono::system_clock::now();
+				// LOGGER: endTime-startTime = time taken
+				NumbeOfPacketsSent++;
+				// LOGGER: Number of Packets sent
+
+				TotalPacketSizeSent += sizeof(ParamNames[iParamIndex].c_str());
+				// LOGGER: TotalPackageSize 
+
+				startTime = chrono::system_clock::now();
 				recv(ClientSocket, Rx, sizeof(Rx), 0);		// Waits for response
+				endTime = chrono::system_clock::now();
+				// LOGGER: endTime-startTime = time taken
+				NumbeOfPacketsRecv++;
+				// LOGGER: NumberOfPacketRecv
+
+				startTime = chrono::system_clock::now();
 				send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);		// Sends the data 
+				endTime = chrono::system_clock::now();
+				// LOGGER: endTime-startTime = time taken
+				NumbeOfPacketsSent++;
+				// LOGGER: Number of Packets sent
+
+				TotalPacketSizeSent += sizeof(strTx.c_str());
+				// LOGGER: TotalPackageSize 
+
+				startTime = chrono::system_clock::now();
 				recv(ClientSocket, Rx, sizeof(Rx), 0);		// Waits for response
+				endTime = chrono::system_clock::now();
+				// LOGGER: endTime-startTime = time taken
+				NumbeOfPacketsRecv++;
+				// LOGGER: NumberOfPacketRecv
+
 				cout << ParamNames[iParamIndex] << " Avg: " << Rx << endl;		// Prints what was recevied 
 				preOffset = offset;	// Sets the pre offset to the next offset to get the next piece of data
 				iParamIndex++;	// Increment the param index

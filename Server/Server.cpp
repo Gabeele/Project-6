@@ -1,5 +1,6 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
+#include <chrono>	// Inlcuded in Logger
 #pragma comment(lib, "Ws2_32.lib")
 using namespace std;
 
@@ -9,6 +10,12 @@ struct StorageTypes
 	float* pData;			// The actual value
 };
 StorageTypes RxData[7];		// Creates 8 RxData units
+
+// Preformance metrics 
+int NumbeOfPacketsSent = 0;
+int NumbeOfPacketsRecv = 0;
+int TotalPacketSizeRecv = 0;
+chrono::time_point<chrono::system_clock> startTime, endTime;
 
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
@@ -47,13 +54,40 @@ int main()
 	{
 		float fValue = 0;
 		memset(RxBuffer, 0, sizeof(RxBuffer));	// Making the RxBuffer 0
+
+		startTime = chrono::system_clock::now();
 		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Reveices the buffer
+		endTime = chrono::system_clock::now();
+		// LOGGER: endTime-startTime = time taken
+		NumbeOfPacketsRecv++;
+		// LOGGER: NumberOfPacketRecv
+
+		TotalPacketSizeRecv += sizeof(RxBuffer);
+		// LOGGER: TotalPackageSize 
+
+		startTime = chrono::system_clock::now();
 		send(ConnectionSocket, "ACK", sizeof("ACK"), 0);	// Sends an ackknowledgment
+		endTime = chrono::system_clock::now();
+		// LOGGER: endTime-startTime = time taken
+		NumbeOfPacketsSent++;
+		// LOGGER: Number of Packets sent
+
 		// Checks what the buffer's string has
 		if (strcmp(RxBuffer, "ACCELERATION BODY X") == 0)
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer)); // Clearing RxBuffer
+
+			startTime = chrono::system_clock::now();
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);	// Assigns the float value from the buffer
 			UpdateData(0, fValue);	// Calls to update
 			fValue = CalcAvg(0);		// Calculates the average
@@ -61,7 +95,18 @@ int main()
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
 			UpdateData(1, fValue);
 			fValue = CalcAvg(1);
@@ -69,7 +114,18 @@ int main()
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Z") == 0)
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
 			UpdateData(2, fValue);
 			fValue = CalcAvg(2);
@@ -77,7 +133,17 @@ int main()
 		else if (strcmp(RxBuffer, "TOTAL WEIGHT") == 0)
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
 			UpdateData(3, fValue);
 			fValue = CalcAvg(3);
@@ -85,7 +151,17 @@ int main()
 		else if (strcmp(RxBuffer, "PLANE ALTITUDE") == 0)
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
 			UpdateData(4, fValue);
 			fValue = CalcAvg(4);
@@ -93,7 +169,17 @@ int main()
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
 			UpdateData(5, fValue);
 			fValue = CalcAvg(5);
@@ -101,7 +187,17 @@ int main()
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0)
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = (float)atof(RxBuffer);
 			UpdateData(6, fValue);
 			fValue = CalcAvg(6);
@@ -110,14 +206,30 @@ int main()
 		{
 			// Missing time stamp -- will lead to the time stampe being printed at 0.0000 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-			recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+			startTime = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+			endTime = chrono::system_clock::now();
+			// LOGGER: endTime-startTime = time taken
+			NumbeOfPacketsRecv++;
+			// LOGGER: NumberOfPacketRecv
+
+			TotalPacketSizeRecv += sizeof(RxBuffer);
+			// LOGGER: TotalPackageSize 
+
 			fValue = 0.0;
 		}
 
 		// Sends the average back to the client
 		char Tx[128];
 		sprintf_s(Tx, "%f", fValue);
+
+		startTime = chrono::system_clock::now();
 		send(ConnectionSocket, Tx, sizeof(Tx), 0);
+		endTime = chrono::system_clock::now();
+		// LOGGER: endTime-startTime = time taken
+		NumbeOfPacketsSent++;
+		// LOGGER: Number of Packets sent
 	}
 
 	closesocket(ConnectionSocket);	//closes incoming socket

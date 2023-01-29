@@ -11,7 +11,32 @@ Logger::Logger() {
 
 Logger::Logger(string directoryName) {
 
+	char* dirName = new char[directoryName.length() + 1];
+	strcpy(dirName, directoryName.c_str());
+	//8 extra bytes for "./Logs//0", 1 more the dirName null terminator.
+	char* pathName = new char[directoryName.length() + 9];
+	char logsArray[8] = "./Logs/";
+	strcpy(pathName, logsArray);
+	strcat(pathName, dirName);
+
 	this->logFileLocation = "./Logs/" + directoryName;
+
+	int checkLogsDir = _mkdir(logsArray);
+	// check if directory is created or not
+	if (!checkLogsDir)
+		printf("Directory created\n");
+	else {
+		printf("Unable to create directory\n");
+	}
+
+	int checkLoggerFileDir = _mkdir(pathName);
+
+	// check if directory is created or not
+	if (!checkLoggerFileDir)
+		printf("Directory created\n");
+	else {
+		printf("Unable to create directory\n");
+	}
 
 	//auto time = std::chrono::system_clock::now();
 	std::time_t endtime = std::time(0);

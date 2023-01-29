@@ -15,40 +15,22 @@ unsigned int GetSize();
 int NumbeOfPacketsSent = 0;
 int NumbeOfPacketsRecv = 0;
 int TotalPacketSizeSent = 0;
-
-//File IO metrics.
 int NumTimesFilesOpen = 0;
 int NumberOfBytesReadFromFile = 0;
 int byteSizeOfLargestLineRead = 0; //Bytesize of line reads captured to give context to the line read times in future iterations of the code base.
-	//std::chrono::duration<double> totalCurrentLineReadTime; //Time it takes for the intended line to be read.
-	//std::chrono::duration<double> totalLineIndexingTime; //Time it takes for the program to 'get it's bearings' and arrive at the correct line.
 std::chrono::duration<double> totalLineReadTime; // Sum of above two metrics.
-	//std::chrono::duration<double> maxCurrentLineReadTime;
-	//std::chrono::duration<double> maxLineIndexingTime;
 std::chrono::duration<double> maxLineReadTime;
-	//std::chrono::duration<double> avgCurrentLineReadTime;
-	//std::chrono::duration<double> avgLineIndexingTime;
 std::chrono::duration<double> avgLineReadTime;
-
 chrono::time_point<chrono::system_clock> startTime, endTime;
 chrono::time_point<chrono::system_clock> startTime2, endTime2;
 
+// Logger Objects
 Logger fileIOLogger = Logger("FileIO");
 Logger DataTransmissionLogger = Logger("DataTransmission-Client");
-//Logger fileIOLogger = Logger("FileIO");
-//Logger fileIOLogger = Logger("FileIO");
-//Logger fileIOLogger = Logger("FileIO");
 
 int main()
 {
 	//Check conditions to determine which performance testing configuration we are currently executing in.
-#if FILEIOTESTING == true
-	cout << "Testing File IO\n";
-#endif
-
-#if OTHERTESTING == true
-	cout << "Other Testing\n";
-#endif
 
 	WSADATA wsaData;
 	SOCKET ClientSocket;
@@ -65,13 +47,13 @@ int main()
 	connect(ClientSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
 
 	//Opens at line 59, ends at line 68. Captures the time it takes to get the file size by the GetSize() function as well as the number of bytes read from the file, then logs the results.
-#if FILEIOTESTING == true
+#if FILEIO == true
 	startTime = chrono::system_clock::now();
 #endif
 
 	uiSize = GetSize();	// Obtains the number of lines in the file
 
-#if FILEIOTESTING == true
+#if FILEIO == true
 	endTime = chrono::system_clock::now();
 	fileIOLogger.PrintToLogFile("Total seconds taken by GetSize() function call:", startTime, endTime);
 	fileIOLogger.PrintToLogFile("Number of Bytes read from file:", NumberOfBytesReadFromFile);
@@ -84,7 +66,7 @@ int main()
 
 		//Opens at line 77, ends at line 172. Increments the file opened counter each iteration of the loop. Logs the number of times the file was opened.
 		//Starts the clock to measure the amount of time it takes to read the current line in one iteration of the loop.
-#if FILEIOTESTING == true
+#if FILEIO == true
 		NumTimesFilesOpen++;
 		startTime = chrono::system_clock::now();
 #endif
@@ -92,11 +74,11 @@ int main()
 			getline(ifs, strInput);
 		}
 
-#if FILEIOTESTING == true
+#if FILEIO == true
 		startTime2 = chrono::system_clock::now();
 #endif
 		getline(ifs, strInput);
-#if FILEIOTESTING == true
+#if FILEIO == true
 		endTime2 = chrono::system_clock::now();
 		endTime = chrono::system_clock::now();
 #endif
@@ -185,12 +167,7 @@ int main()
 		}
 		ifs.close();	 // Closes the file
 
-
-		//Avg time of line read
-		//avg size of line read
-		//longest line read
-		//long time to read a line
-#if FILEIOTESTING == true
+#if FILEIO == true
 		std::chrono::duration<double> elapsedTime = endTime - startTime;
 		totalLineReadTime += (elapsedTime);
 		if (elapsedTime > maxLineReadTime) {
@@ -199,11 +176,9 @@ int main()
 		avgLineReadTime = totalLineReadTime / NumTimesFilesOpen;
 #endif
 
-
-
 	}
 
-#if FILEIOTESTING == true
+#if FILEIO == true
 	fileIOLogger.PrintToLogFile("totalLineReadTime:", totalLineReadTime);
 	fileIOLogger.PrintToLogFile("maxLineReadTime:", maxLineReadTime);
 	fileIOLogger.PrintToLogFile("avgLineReadTime:", avgLineReadTime);
@@ -215,7 +190,6 @@ int main()
 	DataTransmissionLogger.PrintToLogFile("Total Number of packets recv (Client)", NumbeOfPacketsRecv);
 	DataTransmissionLogger.PrintToLogFile("Total packet byte size sent (Client)", TotalPacketSizeSent);
 #endif
-
 
 	closesocket(ClientSocket);
 	WSACleanup();
@@ -236,11 +210,14 @@ unsigned int GetSize()
 
 			getline(ifs, strInput);
 
+#if FILEIO == true
+
 			int currentLineBytesRead = strInput.length() * sizeof(char);
 			NumberOfBytesReadFromFile += currentLineBytesRead;
 			if (byteSizeOfLargestLineRead < currentLineBytesRead) {
 				byteSizeOfLargestLineRead = currentLineBytesRead;
 			}
+#endif 
 
 			uiSize++;
 		}

@@ -6,12 +6,15 @@
 
 using namespace std;
 
-struct StorageTypes 
-{ 
+struct StorageTypes
+{
 	unsigned int size = 0;	// Length of the column 
 	float* pData;			// The actual value
 };
 StorageTypes RxData[7];		// Creates 8 RxData units
+
+void UpdateData(unsigned int, float);
+float CalcAvg(unsigned int);
 
 // Preformance metrics 
 int NumbeOfPacketsSent = 0;
@@ -26,13 +29,11 @@ chrono::time_point<chrono::system_clock> startTime, endTime;
 chrono::time_point<chrono::system_clock> startTime2, endTime2;
 chrono::time_point<chrono::system_clock> startTime3, endTime3;
 
+// Logging objects
 Logger DataTransmissionLogger = Logger("DataTransmission-Server");
 Logger MemoryManagementLogger = Logger("MemoryManagement-Server");
 Logger ParsingLogger = Logger("Parsing-Server");
 Logger CalculationLogger = Logger("Calculation-Server");
-
-void UpdateData(unsigned int, float);
-float CalcAvg(unsigned int);
 
 int main()
 {
@@ -42,7 +43,7 @@ int main()
 	sockaddr_in SvrAddr;
 
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
-	ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);	
+	ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (ServerSocket == SOCKET_ERROR)
 		return -1;
 
@@ -82,7 +83,7 @@ int main()
 		TotalPacketSizeRecv += sizeof(RxBuffer);
 		NumbeOfPacketsRecv++;
 #endif
-		
+
 
 #if DATATRANSMISSION == true
 		startTime = chrono::system_clock::now();
@@ -134,7 +135,6 @@ int main()
 			endTime = chrono::system_clock::now();
 			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
 
 #if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
@@ -144,12 +144,11 @@ int main()
 			endTime = chrono::system_clock::now();
 			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
+
 #if PARSING == true
 			endTime3 = chrono::system_clock::now();
 			ParsingLogger.PrintToLogFile("Comparison Time for ACCELERATION BODY X", startTime3, endTime3);
 #endif
-			// LOGGER: Time of parsing
 
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
@@ -184,7 +183,6 @@ int main()
 			endTime = chrono::system_clock::now();
 			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
 
 #if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
@@ -194,13 +192,12 @@ int main()
 			endTime = chrono::system_clock::now();
 			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
+
 
 #if PARSING == true
 			endTime3 = chrono::system_clock::now();
 			ParsingLogger.PrintToLogFile("Comparison Time for ACCELERATION BODY Y", startTime3, endTime3);
 #endif
-			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Z") == 0)
 		{
@@ -234,7 +231,6 @@ int main()
 			endTime = chrono::system_clock::now();
 			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
 
 #if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
@@ -244,13 +240,12 @@ int main()
 			endTime = chrono::system_clock::now();
 			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
 
 #if PARSING == true
 			endTime3 = chrono::system_clock::now();
 			ParsingLogger.PrintToLogFile("Comparison Time for ACCELERATION BODY Z", startTime3, endTime3);
 #endif
-			// LOGGER: Time of parsing
+
 		}
 		else if (strcmp(RxBuffer, "TOTAL WEIGHT") == 0)
 		{
@@ -283,8 +278,7 @@ int main()
 			endTime = chrono::system_clock::now();
 			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
-			
+
 #if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
 #endif
@@ -293,13 +287,11 @@ int main()
 			endTime = chrono::system_clock::now();
 			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
 
 #if PARSING == true
 			endTime3 = chrono::system_clock::now();
 			ParsingLogger.PrintToLogFile("Comparison Time for TOTAL WEIGHT", startTime3, endTime3);
 #endif
-			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "PLANE ALTITUDE") == 0)
 		{
@@ -332,7 +324,7 @@ int main()
 			endTime = chrono::system_clock::now();
 			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
+
 
 #if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
@@ -342,13 +334,13 @@ int main()
 			endTime = chrono::system_clock::now();
 			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
+
 
 #if PARSING == true
 			endTime3 = chrono::system_clock::now();
 			ParsingLogger.PrintToLogFile("Comparison Time for PLANE ALTITUDE", startTime3, endTime3);
 #endif
-			// LOGGER: Time of parsing
+
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
 		{
@@ -382,7 +374,7 @@ int main()
 			endTime = chrono::system_clock::now();
 			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
+
 
 #if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
@@ -392,13 +384,11 @@ int main()
 			endTime = chrono::system_clock::now();
 			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
 
 #if PARSING == true
 			endTime3 = chrono::system_clock::now();
 			ParsingLogger.PrintToLogFile("Comparison Time for ATTITUDE INDICATOR PICTH DEGREES", startTime3, endTime3);
 #endif
-			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0)
 		{
@@ -431,7 +421,6 @@ int main()
 			endTime = chrono::system_clock::now();
 			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
 
 #if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
@@ -441,13 +430,12 @@ int main()
 			endTime = chrono::system_clock::now();
 			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
 #endif
-			// LOGGER: endTime-startTime = time taken
+
 
 #if PARSING == true
 			endTime3 = chrono::system_clock::now();
 			ParsingLogger.PrintToLogFile("Comparison Time for ATTITUDE INDICATOR BANK DEGREES", startTime3, endTime3);
 #endif
-			// LOGGER: Time of parsing
 		}
 		else
 		{
@@ -478,13 +466,11 @@ int main()
 			endTime3 = chrono::system_clock::now();
 			ParsingLogger.PrintToLogFile("Comparison Time for ELSE", startTime3, endTime3);
 #endif
-			// LOGGER: Time of parsing
 		}
 #if PARSING == true
 		endTime2 = chrono::system_clock::now();
 		ParsingLogger.PrintToLogFile("Total parsing time with comparison for one iteration", startTime2, endTime2);
 #endif
-		// LOGGER: Total time to parse packet 
 
 		// Sends the average back to the client
 		char Tx[128];
@@ -517,15 +503,13 @@ int main()
 #endif
 
 #if MEMORYMANAGEMENT == true
-	// log the update data calls
 	MemoryManagementLogger.PrintToLogFile("Total number of memory management calls (Server)", updateDataCalls);
 #endif
 
 #if CALCULATIONS == true
-	// log the update data calls
 	CalculationLogger.PrintToLogFile("Total number of CalcAvg calls made (Server)", calculateAverageCalls);
 #endif
-	
+
 	closesocket(ConnectionSocket);	//closes incoming socket
 	closesocket(ServerSocket);	    //closes server socket	
 	WSACleanup();					//frees Winsock resources
@@ -533,7 +517,6 @@ int main()
 	return 1;
 }
 
-// 
 void UpdateData(unsigned int uiIndex, float value)
 {
 #if MEMORYMANAGEMENT == true
@@ -542,7 +525,7 @@ void UpdateData(unsigned int uiIndex, float value)
 	// First time a value is entered will configure the column
 	if (RxData[uiIndex].size == 0)
 	{
-		RxData[uiIndex].pData = new float[1];	
+		RxData[uiIndex].pData = new float[1];
 		RxData[uiIndex].pData[0] = value;
 		RxData[uiIndex].size = 1;
 	}

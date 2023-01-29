@@ -1,7 +1,7 @@
 #pragma once
 
-#define FILEIOTESTING false
-#define DATATRANSMISSION false
-#define MEMORYMANAGEMENT false
-#define PARSING false
-#define CALCULATIONS false
+#define FILEIO true
+#define DATATRANSMISSION true
+#define MEMORYMANAGEMENT true
+#define PARSING true
+#define CALCULATIONS true

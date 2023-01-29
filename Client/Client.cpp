@@ -34,7 +34,7 @@ chrono::time_point<chrono::system_clock> startTime, endTime;
 chrono::time_point<chrono::system_clock> startTime2, endTime2;
 
 Logger fileIOLogger = Logger("FileIO");
-//Logger fileIOLogger = Logger("FileIO");
+Logger DataTransmissionLogger = Logger("DataTransmission");
 //Logger fileIOLogger = Logger("FileIO");
 //Logger fileIOLogger = Logger("FileIO");
 //Logger fileIOLogger = Logger("FileIO");
@@ -100,8 +100,7 @@ int main()
 		endTime2 = chrono::system_clock::now();
 		endTime = chrono::system_clock::now();
 #endif
-		// LOGGER: endTime-startTime = time taken
-		// LOGGER: Number of Byte per FILE IO Call sizeof(strInput)
+
 		if (l > 0)	// Only after the first iteration will this execute
 		{
 			size_t offset, preOffset;
@@ -114,39 +113,55 @@ int main()
 				offset = strInput.find_first_of(',', preOffset+1);	// Finds the first comma and sets the offset to the index of the comma + 1 
 				string strTx = strInput.substr(preOffset+1, offset - (preOffset+1));
 
+#if DATATRANSMISSION == true
 				startTime = chrono::system_clock::now();
+#endif
+
 				send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);		// Sends the current parameter title (What the data is)
+
+#if DATATRANSMISSION == true
 				endTime = chrono::system_clock::now();
-				// LOGGER: endTime-startTime = time taken
-				NumbeOfPacketsSent++;
-				// LOGGER: Number of Packets sent
+				DataTransmissionLogger.PrintToLogFile("Time to send packet (Client)", startTime, endTime);
 
 				TotalPacketSizeSent += sizeof(ParamNames[iParamIndex].c_str());
-				// LOGGER: TotalPackageSize 
-
-				startTime = chrono::system_clock::now();
-				recv(ClientSocket, Rx, sizeof(Rx), 0);		// Waits for response
-				endTime = chrono::system_clock::now();
-				// LOGGER: endTime-startTime = time taken
-				NumbeOfPacketsRecv++;
-				// LOGGER: NumberOfPacketRecv
-
-				startTime = chrono::system_clock::now();
-				send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);		// Sends the data 
-				endTime = chrono::system_clock::now();
-				// LOGGER: endTime-startTime = time taken
 				NumbeOfPacketsSent++;
-				// LOGGER: Number of Packets sent
-
-				TotalPacketSizeSent += sizeof(strTx.c_str());
-				// LOGGER: TotalPackageSize 
-
+#endif
+				
+#if DATATRANSMISSION == true
 				startTime = chrono::system_clock::now();
+#endif
+
 				recv(ClientSocket, Rx, sizeof(Rx), 0);		// Waits for response
+
+#if DATATRANSMISSION == true
 				endTime = chrono::system_clock::now();
-				// LOGGER: endTime-startTime = time taken
+				DataTransmissionLogger.PrintToLogFile("Time to recv packet (Client)", startTime, endTime);
+
 				NumbeOfPacketsRecv++;
-				// LOGGER: NumberOfPacketRecv
+#endif
+
+#if DATATRANSMISSION == true
+				startTime = chrono::system_clock::now();
+#endif
+				send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);		// Sends the data 
+#if DATATRANSMISSION == true
+				endTime = chrono::system_clock::now();
+				DataTransmissionLogger.PrintToLogFile("Time to send packet (Client)", startTime, endTime);
+
+				TotalPacketSizeSent += sizeof(ParamNames[iParamIndex].c_str());
+				NumbeOfPacketsSent++;
+#endif
+
+#if DATATRANSMISSION == true
+				startTime = chrono::system_clock::now();
+#endif
+				recv(ClientSocket, Rx, sizeof(Rx), 0);		// Waits for response
+#if DATATRANSMISSION == true
+				endTime = chrono::system_clock::now();
+				DataTransmissionLogger.PrintToLogFile("Time to recv packet (Client)", startTime, endTime);
+
+				NumbeOfPacketsRecv++;
+#endif
 
 				cout << ParamNames[iParamIndex] << " Avg: " << Rx << endl;		// Prints what was recevied 
 				preOffset = offset;	// Sets the pre offset to the next offset to get the next piece of data
@@ -183,6 +198,8 @@ int main()
 		avgLineReadTime = totalLineReadTime / NumTimesFilesOpen;
 #endif
 
+
+
 	}
 
 #if FILEIOTESTING == true
@@ -190,6 +207,12 @@ int main()
 	fileIOLogger.PrintToLogFile("maxLineReadTime:", maxLineReadTime);
 	fileIOLogger.PrintToLogFile("avgLineReadTime:", avgLineReadTime);
 	fileIOLogger.PrintToLogFile("Number of times data file was open:", NumTimesFilesOpen);
+#endif
+
+#if DATATRANSMISSION == true
+	DataTransmissionLogger.PrintToLogFile("Total Number of packets sent (Client)", NumbeOfPacketsSent);
+	DataTransmissionLogger.PrintToLogFile("Total Number of packets recv (Client)", NumbeOfPacketsRecv);
+	DataTransmissionLogger.PrintToLogFile("Total packet byte size sent (Client)", TotalPacketSizeSent);
 #endif
 
 	closesocket(ClientSocket);

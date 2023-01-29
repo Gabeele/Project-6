@@ -34,7 +34,7 @@ chrono::time_point<chrono::system_clock> startTime, endTime;
 chrono::time_point<chrono::system_clock> startTime2, endTime2;
 
 Logger fileIOLogger = Logger("FileIO");
-Logger DataTransmissionLogger = Logger("DataTransmission");
+Logger DataTransmissionLogger = Logger("DataTransmission-Client");
 //Logger fileIOLogger = Logger("FileIO");
 //Logger fileIOLogger = Logger("FileIO");
 //Logger fileIOLogger = Logger("FileIO");

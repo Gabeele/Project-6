@@ -1,7 +1,9 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
-#include <chrono>	// Inlcuded in Logger
 #pragma comment(lib, "Ws2_32.lib")
+#include "../Client/LoggingConfiguration.h"
+#include "../Client/Logger.h"
+
 using namespace std;
 
 struct StorageTypes 
@@ -15,9 +17,12 @@ StorageTypes RxData[7];		// Creates 8 RxData units
 int NumbeOfPacketsSent = 0;
 int NumbeOfPacketsRecv = 0;
 int TotalPacketSizeRecv = 0;
+int TotalPacketSizeSend = 0;
 chrono::time_point<chrono::system_clock> startTime, endTime;
 chrono::time_point<chrono::system_clock> startTime2, endTime2;
 chrono::time_point<chrono::system_clock> startTime3, endTime3;
+
+Logger DataTransmissionLogger = Logger("DataTransmission-Server");
 
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
@@ -57,22 +62,33 @@ int main()
 		float fValue = 0;
 		memset(RxBuffer, 0, sizeof(RxBuffer));	// Making the RxBuffer 0
 
+#if DATATRANSMISSION == true
 		startTime = chrono::system_clock::now();
+#endif
 		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Reveices the buffer
+
+#if DATATRANSMISSION == true
 		endTime = chrono::system_clock::now();
-		// LOGGER: endTime-startTime = time taken
-		NumbeOfPacketsRecv++;
-		// LOGGER: NumberOfPacketRecv
+		DataTransmissionLogger.PrintToLogFile("Time to recv packet (Server)", startTime, endTime);
+		DataTransmissionLogger.PrintToLogFile("Recv packet size (Server)", sizeof(RxBuffer));
 
 		TotalPacketSizeRecv += sizeof(RxBuffer);
-		// LOGGER: TotalPackageSize 
+		NumbeOfPacketsRecv++;
+#endif
+		
 
+#if DATATRANSMISSION == true
 		startTime = chrono::system_clock::now();
+#endif
 		send(ConnectionSocket, "ACK", sizeof("ACK"), 0);	// Sends an ackknowledgment
+#if DATATRANSMISSION == true
 		endTime = chrono::system_clock::now();
-		// LOGGER: endTime-startTime = time taken
+		DataTransmissionLogger.PrintToLogFile("Time to send packet (Server)", startTime, endTime);
+		DataTransmissionLogger.PrintToLogFile("Send packet size (Server)", sizeof("ACK"));
+
+		TotalPacketSizeSend += sizeof("ACK");
 		NumbeOfPacketsSent++;
-		// LOGGER: Number of Packets sent
+#endif
 
 		startTime2 = chrono::system_clock::now();
 		// Checks what the buffer's string has
@@ -82,16 +98,18 @@ int main()
 
 			memset(RxBuffer, 0, sizeof(RxBuffer)); // Clearing RxBuffer
 
+#if DATATRANSMISSION == true
 			startTime = chrono::system_clock::now();
+#endif
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+#if DATATRANSMISSION == true
 			endTime = chrono::system_clock::now();
-			// LOGGER: endTime-startTime = time taken
-			NumbeOfPacketsRecv++;
-			// LOGGER: NumberOfPacketRecv
-
+			DataTransmissionLogger.PrintToLogFile("Time to recv packet (Server)", startTime, endTime);
+			DataTransmissionLogger.PrintToLogFile("Recv packet size (Server)", sizeof(RxBuffer));
 
 			TotalPacketSizeRecv += sizeof(RxBuffer);
-			// LOGGER: TotalPackageSize 
+			NumbeOfPacketsRecv++;
+#endif
 
 			fValue = (float)atof(RxBuffer);	// Assigns the float value from the buffer
 
@@ -115,16 +133,18 @@ int main()
 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
+#if DATATRANSMISSION == true
 			startTime = chrono::system_clock::now();
+#endif
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+#if DATATRANSMISSION == true
 			endTime = chrono::system_clock::now();
-			// LOGGER: endTime-startTime = time taken
-			NumbeOfPacketsRecv++;
-			// LOGGER: NumberOfPacketRecv
-
+			DataTransmissionLogger.PrintToLogFile("Time to recv packet (Server)", startTime, endTime);
+			DataTransmissionLogger.PrintToLogFile("Recv packet size (Server)", sizeof(RxBuffer));
 
 			TotalPacketSizeRecv += sizeof(RxBuffer);
-			// LOGGER: TotalPackageSize 
+			NumbeOfPacketsRecv++;
+#endif
 
 			fValue = (float)atof(RxBuffer);
 
@@ -147,16 +167,18 @@ int main()
 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
+#if DATATRANSMISSION == true
 			startTime = chrono::system_clock::now();
+#endif
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+#if DATATRANSMISSION == true
 			endTime = chrono::system_clock::now();
-			// LOGGER: endTime-startTime = time taken
-			NumbeOfPacketsRecv++;
-			// LOGGER: NumberOfPacketRecv
-
+			DataTransmissionLogger.PrintToLogFile("Time to recv packet (Server)", startTime, endTime);
+			DataTransmissionLogger.PrintToLogFile("Recv packet size (Server)", sizeof(RxBuffer));
 
 			TotalPacketSizeRecv += sizeof(RxBuffer);
-			// LOGGER: TotalPackageSize 
+			NumbeOfPacketsRecv++;
+#endif
 
 			fValue = (float)atof(RxBuffer);
 
@@ -179,16 +201,18 @@ int main()
 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
+#if DATATRANSMISSION == true
 			startTime = chrono::system_clock::now();
+#endif
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+#if DATATRANSMISSION == true
 			endTime = chrono::system_clock::now();
-			// LOGGER: endTime-startTime = time taken
-			NumbeOfPacketsRecv++;
-			// LOGGER: NumberOfPacketRecv
+			DataTransmissionLogger.PrintToLogFile("Time to recv packet (Server)", startTime, endTime);
+			DataTransmissionLogger.PrintToLogFile("Recv packet size (Server)", sizeof(RxBuffer));
 
 			TotalPacketSizeRecv += sizeof(RxBuffer);
-			// LOGGER: TotalPackageSize 
-
+			NumbeOfPacketsRecv++;
+#endif
 			fValue = (float)atof(RxBuffer);
 
 			startTime = chrono::system_clock::now();
@@ -208,15 +232,18 @@ int main()
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
+#if DATATRANSMISSION == true
 			startTime = chrono::system_clock::now();
+#endif
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+#if DATATRANSMISSION == true
 			endTime = chrono::system_clock::now();
-			// LOGGER: endTime-startTime = time taken
-			NumbeOfPacketsRecv++;
-			// LOGGER: NumberOfPacketRecv
+			DataTransmissionLogger.PrintToLogFile("Time to recv packet (Server)", startTime, endTime);
+			DataTransmissionLogger.PrintToLogFile("Recv packet size (Server)", sizeof(RxBuffer));
 
 			TotalPacketSizeRecv += sizeof(RxBuffer);
-			// LOGGER: TotalPackageSize 
+			NumbeOfPacketsRecv++;
+#endif
 
 			fValue = (float)atof(RxBuffer);
 
@@ -239,15 +266,18 @@ int main()
 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
+#if DATATRANSMISSION == true
 			startTime = chrono::system_clock::now();
+#endif
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+#if DATATRANSMISSION == true
 			endTime = chrono::system_clock::now();
-			// LOGGER: endTime-startTime = time taken
-			NumbeOfPacketsRecv++;
-			// LOGGER: NumberOfPacketRecv
+			DataTransmissionLogger.PrintToLogFile("Time to recv packet (Server)", startTime, endTime);
+			DataTransmissionLogger.PrintToLogFile("Recv packet size (Server)", sizeof(RxBuffer));
 
 			TotalPacketSizeRecv += sizeof(RxBuffer);
-			// LOGGER: TotalPackageSize 
+			NumbeOfPacketsRecv++;
+#endif
 
 			fValue = (float)atof(RxBuffer);
 
@@ -269,16 +299,18 @@ int main()
 			startTime3 = chrono::system_clock::now();
 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
-
+#if DATATRANSMISSION == true
 			startTime = chrono::system_clock::now();
+#endif
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+#if DATATRANSMISSION == true
 			endTime = chrono::system_clock::now();
-			// LOGGER: endTime-startTime = time taken
-			NumbeOfPacketsRecv++;
-			// LOGGER: NumberOfPacketRecv
+			DataTransmissionLogger.PrintToLogFile("Time to recv packet (Server)", startTime, endTime);
+			DataTransmissionLogger.PrintToLogFile("Recv packet size (Server)", sizeof(RxBuffer));
 
 			TotalPacketSizeRecv += sizeof(RxBuffer);
-			// LOGGER: TotalPackageSize 
+			NumbeOfPacketsRecv++;
+#endif
 
 			fValue = (float)atof(RxBuffer);
 
@@ -302,15 +334,18 @@ int main()
 			// Missing time stamp -- will lead to the time stampe being printed at 0.0000 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
+#if DATATRANSMISSION == true
 			startTime = chrono::system_clock::now();
+#endif
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
+#if DATATRANSMISSION == true
 			endTime = chrono::system_clock::now();
-			// LOGGER: endTime-startTime = time taken
-			NumbeOfPacketsRecv++;
-			// LOGGER: NumberOfPacketRecv
+			DataTransmissionLogger.PrintToLogFile("Time to recv packet (Server)", startTime, endTime);
+			DataTransmissionLogger.PrintToLogFile("Recv packet size (Server)", sizeof(RxBuffer));
 
 			TotalPacketSizeRecv += sizeof(RxBuffer);
-			// LOGGER: TotalPackageSize 
+			NumbeOfPacketsRecv++;
+#endif
 
 			fValue = 0.0;
 
@@ -324,13 +359,26 @@ int main()
 		char Tx[128];
 		sprintf_s(Tx, "%f", fValue);
 
+#if DATATRANSMISSION == true
 		startTime = chrono::system_clock::now();
+#endif
 		send(ConnectionSocket, Tx, sizeof(Tx), 0);
+#if DATATRANSMISSION == true
 		endTime = chrono::system_clock::now();
-		// LOGGER: endTime-startTime = time taken
+		DataTransmissionLogger.PrintToLogFile("Time to send packet (Server)", startTime, endTime);
+		DataTransmissionLogger.PrintToLogFile("Send packet size (Server)", sizeof(Tx));
+
+		TotalPacketSizeSend += sizeof(Tx);
 		NumbeOfPacketsSent++;
-		// LOGGER: Number of Packets sent
+#endif
 	}
+
+#if DATATRANSMISSION == true
+	DataTransmissionLogger.PrintToLogFile("Total Number of packets sent (Server)", NumbeOfPacketsSent);
+	DataTransmissionLogger.PrintToLogFile("Total Number of packets recv (Server)", NumbeOfPacketsRecv);
+	DataTransmissionLogger.PrintToLogFile("Total packet byte size sent (Server)", TotalPacketSizeSend);
+	DataTransmissionLogger.PrintToLogFile("Total packet byte size Recv (Server)", TotalPacketSizeRecv);
+#endif
 
 	closesocket(ConnectionSocket);	//closes incoming socket
 	closesocket(ServerSocket);	    //closes server socket	

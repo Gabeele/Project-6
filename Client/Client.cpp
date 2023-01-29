@@ -122,6 +122,7 @@ int main()
 #if DATATRANSMISSION == true
 				endTime = chrono::system_clock::now();
 				DataTransmissionLogger.PrintToLogFile("Time to send packet (Client)", startTime, endTime);
+				DataTransmissionLogger.PrintToLogFile("Sent packet size (Client)", (int)ParamNames[iParamIndex].length());
 
 				TotalPacketSizeSent += sizeof(ParamNames[iParamIndex].c_str());
 				NumbeOfPacketsSent++;
@@ -136,7 +137,7 @@ int main()
 #if DATATRANSMISSION == true
 				endTime = chrono::system_clock::now();
 				DataTransmissionLogger.PrintToLogFile("Time to recv packet (Client)", startTime, endTime);
-
+				DataTransmissionLogger.PrintToLogFile("Revc packet size (Client)", sizeof(Rx));
 				NumbeOfPacketsRecv++;
 #endif
 
@@ -147,7 +148,7 @@ int main()
 #if DATATRANSMISSION == true
 				endTime = chrono::system_clock::now();
 				DataTransmissionLogger.PrintToLogFile("Time to send packet (Client)", startTime, endTime);
-
+				DataTransmissionLogger.PrintToLogFile("Sent packet size (Client)", (int)strTx.length());
 				TotalPacketSizeSent += sizeof(ParamNames[iParamIndex].c_str());
 				NumbeOfPacketsSent++;
 #endif
@@ -159,7 +160,7 @@ int main()
 #if DATATRANSMISSION == true
 				endTime = chrono::system_clock::now();
 				DataTransmissionLogger.PrintToLogFile("Time to recv packet (Client)", startTime, endTime);
-
+				DataTransmissionLogger.PrintToLogFile("Revc packet size (Client)", sizeof(Rx));
 				NumbeOfPacketsRecv++;
 #endif
 

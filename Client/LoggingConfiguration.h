@@ -1,4 +1,7 @@
 #pragma once
 
-#define FILEIOTESTING true
-#define DATATRANSMISSION true
+#define FILEIOTESTING false
+#define DATATRANSMISSION false
+#define MEMORYMANAGEMENT false
+#define PARSING false
+#define CALCULATIONS false

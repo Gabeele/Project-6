@@ -216,6 +216,7 @@ int main()
 	DataTransmissionLogger.PrintToLogFile("Total packet byte size sent (Client)", TotalPacketSizeSent);
 #endif
 
+
 	closesocket(ClientSocket);
 	WSACleanup();
 

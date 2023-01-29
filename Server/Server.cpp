@@ -18,11 +18,18 @@ int NumbeOfPacketsSent = 0;
 int NumbeOfPacketsRecv = 0;
 int TotalPacketSizeRecv = 0;
 int TotalPacketSizeSend = 0;
+int updateDataCalls = 0;
+int calculateAverageCalls = 0;
+int ParsingCounter = 0;
+int ComaprisonCounter = 0;
 chrono::time_point<chrono::system_clock> startTime, endTime;
 chrono::time_point<chrono::system_clock> startTime2, endTime2;
 chrono::time_point<chrono::system_clock> startTime3, endTime3;
 
 Logger DataTransmissionLogger = Logger("DataTransmission-Server");
+Logger MemoryManagementLogger = Logger("MemoryManagement-Server");
+Logger ParsingLogger = Logger("Parsing-Server");
+Logger CalculationLogger = Logger("Calculation-Server");
 
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
@@ -90,12 +97,18 @@ int main()
 		NumbeOfPacketsSent++;
 #endif
 
+
+#if PARSING == true
 		startTime2 = chrono::system_clock::now();
+		ParsingCounter++;
+#endif
 		// Checks what the buffer's string has
 		if (strcmp(RxBuffer, "ACCELERATION BODY X") == 0)
 		{
+#if PARSING == true
+			ComaprisonCounter += 1;
 			startTime3 = chrono::system_clock::now();
-
+#endif
 			memset(RxBuffer, 0, sizeof(RxBuffer)); // Clearing RxBuffer
 
 #if DATATRANSMISSION == true
@@ -113,23 +126,38 @@ int main()
 
 			fValue = (float)atof(RxBuffer);	// Assigns the float value from the buffer
 
+#if MEMORYMANAGEMENT == true
 			startTime = chrono::system_clock::now();
-			UpdateData(0, fValue);	// Calls to update
+#endif
+			UpdateData(0, fValue);
+#if MEMORYMANAGEMENT == true
 			endTime = chrono::system_clock::now();
+			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
+#endif
 			fValue = CalcAvg(0);		// Calculates the average
+#if CALCULATIONS == true
 			endTime = chrono::system_clock::now();
+			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
-
+#if PARSING == true
 			endTime3 = chrono::system_clock::now();
+			ParsingLogger.PrintToLogFile("Comparison Time for ACCELERATION BODY X", startTime3, endTime3);
+#endif
 			// LOGGER: Time of parsing
 
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
 		{
+#if PARSING == true
+			ComaprisonCounter += 2;
 			startTime3 = chrono::system_clock::now();
+#endif
 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
@@ -148,22 +176,38 @@ int main()
 
 			fValue = (float)atof(RxBuffer);
 
+#if MEMORYMANAGEMENT == true
 			startTime = chrono::system_clock::now();
+#endif
 			UpdateData(1, fValue);
+#if MEMORYMANAGEMENT == true
 			endTime = chrono::system_clock::now();
+			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
-			fValue = CalcAvg(1);
+#endif
+			fValue = CalcAvg(1);		// Calculates the average
+#if CALCULATIONS == true
 			endTime = chrono::system_clock::now();
+			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if PARSING == true
 			endTime3 = chrono::system_clock::now();
+			ParsingLogger.PrintToLogFile("Comparison Time for ACCELERATION BODY Y", startTime3, endTime3);
+#endif
 			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Z") == 0)
 		{
+#if PARSING == true
+			ComaprisonCounter += 3;
 			startTime3 = chrono::system_clock::now();
+#endif
 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
@@ -182,22 +226,38 @@ int main()
 
 			fValue = (float)atof(RxBuffer);
 
+#if MEMORYMANAGEMENT == true
 			startTime = chrono::system_clock::now();
+#endif
 			UpdateData(2, fValue);
+#if MEMORYMANAGEMENT == true
 			endTime = chrono::system_clock::now();
+			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
-			fValue = CalcAvg(2);
+#endif
+			fValue = CalcAvg(2);		// Calculates the average
+#if CALCULATIONS == true
 			endTime = chrono::system_clock::now();
+			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if PARSING == true
 			endTime3 = chrono::system_clock::now();
+			ParsingLogger.PrintToLogFile("Comparison Time for ACCELERATION BODY Z", startTime3, endTime3);
+#endif
 			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "TOTAL WEIGHT") == 0)
 		{
+#if PARSING == true
+			ComaprisonCounter += 4;
 			startTime3 = chrono::system_clock::now();
+#endif
 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
@@ -215,21 +275,38 @@ int main()
 #endif
 			fValue = (float)atof(RxBuffer);
 
+#if MEMORYMANAGEMENT == true
 			startTime = chrono::system_clock::now();
+#endif
 			UpdateData(3, fValue);
+#if MEMORYMANAGEMENT == true
 			endTime = chrono::system_clock::now();
+			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 			
+#if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
-			fValue = CalcAvg(3);
+#endif
+			fValue = CalcAvg(3);		// Calculates the average
+#if CALCULATIONS == true
 			endTime = chrono::system_clock::now();
+			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if PARSING == true
 			endTime3 = chrono::system_clock::now();
+			ParsingLogger.PrintToLogFile("Comparison Time for TOTAL WEIGHT", startTime3, endTime3);
+#endif
 			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "PLANE ALTITUDE") == 0)
 		{
+#if PARSING == true
+			ComaprisonCounter += 5;
+			startTime3 = chrono::system_clock::now();
+#endif
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
 #if DATATRANSMISSION == true
@@ -247,22 +324,38 @@ int main()
 
 			fValue = (float)atof(RxBuffer);
 
+#if MEMORYMANAGEMENT == true
 			startTime = chrono::system_clock::now();
+#endif
 			UpdateData(4, fValue);
+#if MEMORYMANAGEMENT == true
 			endTime = chrono::system_clock::now();
+			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
-			fValue = CalcAvg(4);
+#endif
+			fValue = CalcAvg(4);		// Calculates the average
+#if CALCULATIONS == true
 			endTime = chrono::system_clock::now();
+			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if PARSING == true
 			endTime3 = chrono::system_clock::now();
+			ParsingLogger.PrintToLogFile("Comparison Time for PLANE ALTITUDE", startTime3, endTime3);
+#endif
 			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
 		{
+#if PARSING == true
+			ComaprisonCounter += 6;
 			startTime3 = chrono::system_clock::now();
+#endif
 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 
@@ -281,22 +374,38 @@ int main()
 
 			fValue = (float)atof(RxBuffer);
 
+#if MEMORYMANAGEMENT == true
 			startTime = chrono::system_clock::now();
+#endif
 			UpdateData(5, fValue);
+#if MEMORYMANAGEMENT == true
 			endTime = chrono::system_clock::now();
+			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
-			fValue = CalcAvg(5);
+#endif
+			fValue = CalcAvg(5);		// Calculates the average
+#if CALCULATIONS == true
 			endTime = chrono::system_clock::now();
+			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if PARSING == true
 			endTime3 = chrono::system_clock::now();
+			ParsingLogger.PrintToLogFile("Comparison Time for ATTITUDE INDICATOR PICTH DEGREES", startTime3, endTime3);
+#endif
 			// LOGGER: Time of parsing
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0)
 		{
+#if PARSING == true
+			ComaprisonCounter += 7;
 			startTime3 = chrono::system_clock::now();
+#endif
 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 #if DATATRANSMISSION == true
@@ -314,22 +423,38 @@ int main()
 
 			fValue = (float)atof(RxBuffer);
 
+#if MEMORYMANAGEMENT == true
 			startTime = chrono::system_clock::now();
+#endif
 			UpdateData(6, fValue);
+#if MEMORYMANAGEMENT == true
 			endTime = chrono::system_clock::now();
+			MemoryManagementLogger.PrintToLogFile("Time for memory management call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if CALCULATIONS == true
 			startTime = chrono::system_clock::now();
-			fValue = CalcAvg(6);
+#endif
+			fValue = CalcAvg(6);		// Calculates the average
+#if CALCULATIONS == true
 			endTime = chrono::system_clock::now();
+			CalculationLogger.PrintToLogFile("Time for CalcAvg call", startTime, endTime);
+#endif
 			// LOGGER: endTime-startTime = time taken
 
+#if PARSING == true
 			endTime3 = chrono::system_clock::now();
+			ParsingLogger.PrintToLogFile("Comparison Time for ATTITUDE INDICATOR BANK DEGREES", startTime3, endTime3);
+#endif
 			// LOGGER: Time of parsing
 		}
 		else
 		{
+#if PARSING == true
+			ComaprisonCounter += 8;
 			startTime3 = chrono::system_clock::now();
+#endif
 
 			// Missing time stamp -- will lead to the time stampe being printed at 0.0000 
 			memset(RxBuffer, 0, sizeof(RxBuffer));
@@ -349,10 +474,16 @@ int main()
 
 			fValue = 0.0;
 
+#if PARSING == true
 			endTime3 = chrono::system_clock::now();
+			ParsingLogger.PrintToLogFile("Comparison Time for ELSE", startTime3, endTime3);
+#endif
 			// LOGGER: Time of parsing
 		}
+#if PARSING == true
 		endTime2 = chrono::system_clock::now();
+		ParsingLogger.PrintToLogFile("Total parsing time with comparison for one iteration", startTime2, endTime2);
+#endif
 		// LOGGER: Total time to parse packet 
 
 		// Sends the average back to the client
@@ -373,6 +504,11 @@ int main()
 #endif
 	}
 
+#if PARSING == true
+	ParsingLogger.PrintToLogFile("The amount of times a packet was parsed", ParsingCounter);
+	ParsingLogger.PrintToLogFile("The amount of times a comparison was made", ComaprisonCounter);
+#endif
+
 #if DATATRANSMISSION == true
 	DataTransmissionLogger.PrintToLogFile("Total Number of packets sent (Server)", NumbeOfPacketsSent);
 	DataTransmissionLogger.PrintToLogFile("Total Number of packets recv (Server)", NumbeOfPacketsRecv);
@@ -380,6 +516,16 @@ int main()
 	DataTransmissionLogger.PrintToLogFile("Total packet byte size Recv (Server)", TotalPacketSizeRecv);
 #endif
 
+#if MEMORYMANAGEMENT == true
+	// log the update data calls
+	MemoryManagementLogger.PrintToLogFile("Total number of memory management calls (Server)", updateDataCalls);
+#endif
+
+#if CALCULATIONS == true
+	// log the update data calls
+	CalculationLogger.PrintToLogFile("Total number of CalcAvg calls made (Server)", calculateAverageCalls);
+#endif
+	
 	closesocket(ConnectionSocket);	//closes incoming socket
 	closesocket(ServerSocket);	    //closes server socket	
 	WSACleanup();					//frees Winsock resources
@@ -390,6 +536,9 @@ int main()
 // 
 void UpdateData(unsigned int uiIndex, float value)
 {
+#if MEMORYMANAGEMENT == true
+	updateDataCalls++;
+#endif
 	// First time a value is entered will configure the column
 	if (RxData[uiIndex].size == 0)
 	{
@@ -413,6 +562,9 @@ void UpdateData(unsigned int uiIndex, float value)
 // Calcuates the average in all the values from 0 to uiIndex. It is a running average
 float CalcAvg(unsigned int uiIndex)
 {
+#if CALCULATIONS == true
+	calculateAverageCalls++;
+#endif
 	float Avg = 0;
 	for (unsigned int x = 0; x < RxData[uiIndex].size; x++)	// Calculates the average of the current column lenght 
 		Avg += RxData[uiIndex].pData[x];

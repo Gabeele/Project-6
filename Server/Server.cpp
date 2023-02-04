@@ -342,7 +342,7 @@ int main()
 #endif
 
 		}
-		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
+		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PITCH DEGREES") == 0)
 		{
 #if PARSING == true
 			ComaprisonCounter += 6;

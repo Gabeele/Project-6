@@ -6,12 +6,15 @@
 
 using namespace std;
 
+#define MAX_DATAPOINTS_SIZE 20
+
 struct StorageTypes
 {
-	unsigned int size = 0;	// Length of the column 
-	float* pData;			// The actual value
+	unsigned int avgValue = 0;
+	float dataPoints[20] = { 0 };
+	float* bufferPtr = &(dataPoints[0]);
 };
-StorageTypes RxData[7];		// Creates 8 RxData units
+StorageTypes RxData[7];
 
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
@@ -522,34 +525,30 @@ void UpdateData(unsigned int uiIndex, float value)
 #if MEMORYMANAGEMENT == true
 	updateDataCalls++;
 #endif
-	// First time a value is entered will configure the column
-	if (RxData[uiIndex].size == 0)
-	{
-		RxData[uiIndex].pData = new float[1];
-		RxData[uiIndex].pData[0] = value;
-		RxData[uiIndex].size = 1;
-	}
-	else     // Any time there is more than 1 in the column, it will reconfigure the memory 
-	{
-		float* pNewData = new float[RxData[uiIndex].size + 1]; // re-creating the float pointer with memory space for 1 additional float
-		for (unsigned int x = 0; x < RxData[uiIndex].size; x++)	// Iterate through the old values and assign the old values into the newly created float ptr array.
-			pNewData[x] = RxData[uiIndex].pData[x];
 
-		pNewData[RxData[uiIndex].size] = value; // appends the newly received float onto the end of the array
-		delete[] RxData[uiIndex].pData; // free old memory
-		RxData[uiIndex].pData = pNewData; // reassign the structure member variable
-		RxData[uiIndex].size++; // incrememnt the structure member size counter
+	//Use uiIndex to reference the correct StoreageType object. Use dereference operator to assign the float value to the index of dataPoints that the bufferPtr points to.
+	*(RxData[uiIndex].bufferPtr) = value;
+	//Increment the bufferPtr after assignment. If the ptr is ever at the end of the buffer, reset bufferPtr to the beginning of the buffer.
+	if (RxData[uiIndex].bufferPtr == &(RxData[uiIndex].dataPoints[sizeof(RxData[uiIndex].dataPoints)])) {
+		RxData[uiIndex].bufferPtr = &(RxData[uiIndex].dataPoints[0]);
 	}
+	else {
+		RxData[uiIndex].bufferPtr++;
+	}
+
+	//After each point calculate the average.
+
 }
 
-// Calcuates the average in all the values from 0 to uiIndex. It is a running average
+
 float CalcAvg(unsigned int uiIndex)
 {
 #if CALCULATIONS == true
 	calculateAverageCalls++;
 #endif
+
 	float Avg = 0;
-	for (unsigned int x = 0; x < RxData[uiIndex].size; x++)	// Calculates the average of the current column lenght 
+	for (unsigned int x = 0; x < RxData[uiIndex].size; x++)
 		Avg += RxData[uiIndex].pData[x];
 
 	Avg = Avg / RxData[uiIndex].size;

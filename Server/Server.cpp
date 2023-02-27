@@ -8,48 +8,52 @@
 #pragma comment(lib, "Ws2_32.lib")
 using namespace std;
 
-void UpdateData(unsigned int, float);
-float CalcAvg(unsigned int);
 void ReceiveData(SOCKET);
 
 int main()
 {
 
 	WSADATA wsaData;
-	SOCKET ServerSocket, ConnectionSocket;
+	SOCKET ListenSocket, ClientSocket;
 	char RxBuffer[128] = {};
 	sockaddr_in SvrAddr;
 
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
-	ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (ServerSocket == SOCKET_ERROR)
+	ListenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (ListenSocket == SOCKET_ERROR)
 		return -1;
 
 	SvrAddr.sin_family = AF_INET;
 	SvrAddr.sin_addr.s_addr = INADDR_ANY;
 	SvrAddr.sin_port = htons(27001);
-	bind(ServerSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
+	bind(ListenSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
 
-	if (ServerSocket == SOCKET_ERROR)
+	if (ListenSocket == SOCKET_ERROR)
 		return -1;
 
+	listen(ListenSocket, 5);
 
 	while (true) {
-		ConnectionSocket = SOCKET_ERROR;
-		ConnectionSocket = accept(ServerSocket, NULL, NULL);
-		if (ConnectionSocket == SOCKET_ERROR) {
-			cerr << "Failed to accept connection." << endl;
-			continue;
+		ClientSocket = accept(ListenSocket, NULL, NULL);
+		if (ClientSocket == INVALID_SOCKET) {
+			cerr << "accept() failed with error: " << WSAGetLastError() << endl;
+			closesocket(ListenSocket);
+			WSACleanup();
+			return 1;
 		}
 
-		thread clientThread(ReceiveData, ConnectionSocket);
+		cout << "Accepted a client connection" << endl;
+
+		//ReceiveData(ClientSocket);
+
+		thread clientThread(ReceiveData, ClientSocket);
 		clientThread.detach();
 	}
 
-	closesocket(ServerSocket);	    //closes server socket	
-	WSACleanup();					//frees Winsock resources
+	closesocket(ListenSocket);
+	WSACleanup();
 
-	return 1;
+	return 0;
 }
 
 
@@ -58,31 +62,36 @@ void ReceiveData(SOCKET ConnectionSocket)
 
 	char RxBuffer[30] = {}; // buffer to store incoming packet
 	int bytesReceived = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0); // receive packet from client
-
+	send(ConnectionSocket, "ACK", sizeof("ACK"), 0);	// Sends an ackknowledgment
 	// Add a plane id to
 	string s(RxBuffer);
 	PlaneConsumption plane(s);
 
-	while (bytesReceived > 0) {
+	while (true) {
+		memset(RxBuffer, '\0', sizeof(RxBuffer));
 		int bytesReceived = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 
 		if (bytesReceived == SOCKET_ERROR || bytesReceived == 0) {
 			cout << "Client disconnected " << endl;
 			closesocket(ConnectionSocket);
-			return;
+			break;
+		}
+		else
+		{
+			send(ConnectionSocket, "ACK", sizeof("ACK"), 0);	// Sends an ackknowledgment
 		}
 
+		string s2(RxBuffer);
 
-		string::size_type pos = s.find_first_of(',');	// Gets the date 
-		string token = s.substr(0, pos);
+		string::size_type pos = s2.find_first_of(',');	// Gets the date 
+		string token = s2.substr(0, pos);
 
 		int epochTime = stoi(token);	// Obtains the epochtime
 
 		chrono::system_clock::time_point tp = chrono::system_clock::time_point(chrono::seconds(epochTime));	// Converts epoch time to a date time
 		time_t date = chrono::system_clock::to_time_t(tp);
 
-		pos = s.find_first_of(',');	// Gets the data
-		token = s.substr(0, pos + 1);
+		token = s2.substr(pos+1, s2.length()); // get the weight
 
 
 		float data = stof(token);
@@ -92,6 +101,7 @@ void ReceiveData(SOCKET ConnectionSocket)
 
 	}
 
-	// Close connection socket
-	closesocket(ConnectionSocket);
+	plane.SaveToFile();
+
+	return;
 }

@@ -9,6 +9,7 @@ class PlaneConsumption
 public:
 	string PlaneId;
 	time_t StartTime;
+	time_t EndTime;
 	float StartWeight;
 	float Average = 0;
 	int DataPoints = 0;

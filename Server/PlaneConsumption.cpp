@@ -1,8 +1,11 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "PlaneConsumption.h"
 #include <time.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 PlaneConsumption::PlaneConsumption(string PlaneId) {
 	this->PlaneId = PlaneId;
@@ -20,16 +23,23 @@ void PlaneConsumption::calcAverage(time_t date, float weight)
 	}
 	else
 	{
-		cout << date - StartTime;
-		Average = (weight - StartWeight) / (date - StartTime);
+		EndTime = date;
+		Average = (StartWeight - weight) / (date - StartTime);
 	}
-	cout << "Average: " << this->Average;
+
+	DataPoints++;
 }
 
 void PlaneConsumption::SaveToFile()
 {
+	auto end = std::chrono::system_clock::now();
+	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+
 	std::ostringstream oss;
-	oss << this->PlaneId << "_" << this->StartTime << ".txt";
+	oss << this->PlaneId << "_" << this->StartTime << "_" 
+		<< std::ctime(&end_time) << ".txt";
+
 	std::string filename = oss.str();
 
 	fstream file_out;
@@ -39,14 +49,10 @@ void PlaneConsumption::SaveToFile()
 		cout << "failed to open " << filename << '\n';
 	}
 	else {
-		file_out << "Some random text to write." << endl;
-		cout << "Done Writing!" << endl;
+		file_out << "ID: " << this->PlaneId << endl;
+		file_out << "Fuel consumption: " << this->Average  << "lbs/s" << endl;
+		file_out << "Flight time: " << this->EndTime - this->StartTime << " s" << endl;
 	}
+
+	file_out.close();
 }
-
-
-/// testing
-	/*time_t now1 = time(NULL);
-	std::this_thread::sleep_for(std::chrono::seconds(5));
-	time_t now2 = time(NULL);
-	cout << now2 - now1;*/

@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="DataFile.txt" />
+    <Text Include="DataFile2.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Logger.h" />

@@ -29,6 +29,9 @@
     <Text Include="DataFile.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="DataFile2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Logger.h">

@@ -6,6 +6,8 @@
 
 PlaneConsumption::PlaneConsumption(string PlaneId) {
 	this->PlaneId = PlaneId;
+	cout << "ID: " << this->PlaneId;
+
 }
 
 void PlaneConsumption::calcAverage(time_t date, float weight)
@@ -21,6 +23,7 @@ void PlaneConsumption::calcAverage(time_t date, float weight)
 		cout << date - StartTime;
 		Average = (weight - StartWeight) / (date - StartTime);
 	}
+	cout << "Average: " << this->Average;
 }
 
 void PlaneConsumption::SaveToFile()
@@ -29,7 +32,6 @@ void PlaneConsumption::SaveToFile()
 	oss << this->PlaneId << "_" << this->StartTime << ".txt";
 	std::string filename = oss.str();
 
-	string filename(filename);
 	fstream file_out;
 
 	file_out.open(filename, std::ios_base::out);

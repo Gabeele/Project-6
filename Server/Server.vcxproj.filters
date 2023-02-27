@@ -18,18 +18,12 @@
     <ClCompile Include="Server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Client\Logger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Client\LoggingConfiguration.cpp">
+    <ClCompile Include="PlaneConsumption.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Client\Logger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Client\LoggingConfiguration.h">
+    <ClInclude Include="PlaneConsumption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

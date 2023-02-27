@@ -4,6 +4,7 @@
 #include <string>
 #include "PlaneConsumption.h"
 #include <chrono>
+
 #pragma comment(lib, "Ws2_32.lib")
 using namespace std;
 
@@ -13,6 +14,7 @@ void ReceiveData(SOCKET);
 
 int main()
 {
+
 	WSADATA wsaData;
 	SOCKET ServerSocket, ConnectionSocket;
 	char RxBuffer[128] = {};
@@ -92,38 +94,4 @@ void ReceiveData(SOCKET ConnectionSocket)
 
 	// Close connection socket
 	closesocket(ConnectionSocket);
-}
-
-
-void UpdateData(unsigned int uiIndex, float value)
-{
-	// First time a value is entered will configure the column
-	if (RxData[uiIndex].size == 0)
-	{
-		RxData[uiIndex].pData = new float[1];
-		RxData[uiIndex].pData[0] = value;
-		RxData[uiIndex].size = 1;
-	}
-	else     // Any time there is more than 1 in the column, it will reconfigure the memory 
-	{
-		float* pNewData = new float[RxData[uiIndex].size + 1]; // re-creating the float pointer with memory space for 1 additional float
-		for (unsigned int x = 0; x < RxData[uiIndex].size; x++)	// Iterate through the old values and assign the old values into the newly created float ptr array.
-			pNewData[x] = RxData[uiIndex].pData[x];
-
-		pNewData[RxData[uiIndex].size] = value; // appends the newly received float onto the end of the array
-		delete[] RxData[uiIndex].pData; // free old memory
-		RxData[uiIndex].pData = pNewData; // reassign the structure member variable
-		RxData[uiIndex].size++; // incrememnt the structure member size counter
-	}
-}
-
-// Calcuates the average in all the values from 0 to uiIndex. It is a running average
-float CalcAvg(unsigned int uiIndex)
-{
-	float Avg = 0;
-	for (unsigned int x = 0; x < RxData[uiIndex].size; x++)	// Calculates the average of the current column lenght 
-		Avg += RxData[uiIndex].pData[x];
-
-	Avg = Avg / RxData[uiIndex].size;
-	return Avg;
 }

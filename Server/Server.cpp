@@ -1,17 +1,15 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
+#include <thread>
+#include <string>
+#include "PlaneConsumption.h"
+#include <chrono>
 #pragma comment(lib, "Ws2_32.lib")
 using namespace std;
 
-struct StorageTypes 
-{ 
-	unsigned int size = 0;	// Length of the column 
-	float* pData;			// The actual value
-};
-StorageTypes RxData[7];		// Creates 8 RxData units
-
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
+void ReceiveData(SOCKET);
 
 int main()
 {
@@ -21,9 +19,9 @@ int main()
 	sockaddr_in SvrAddr;
 
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
-	ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);	
+	ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (ServerSocket == SOCKET_ERROR)
-		return -1;
+	return -1;
 
 	SvrAddr.sin_family = AF_INET;
 	SvrAddr.sin_addr.s_addr = INADDR_ANY;
@@ -33,101 +31,70 @@ int main()
 	if (ServerSocket == SOCKET_ERROR)
 		return -1;
 
-	listen(ServerSocket, 1);
-	cout << "Waiting for client connection\n" << endl;
-	ConnectionSocket = SOCKET_ERROR;
-	ConnectionSocket = accept(ServerSocket, NULL, NULL);
 
-	if (ConnectionSocket == SOCKET_ERROR)
-		return -1;
-
-	cout << "Connection Established" << endl;
-
-	while (RxBuffer[0] != '*')	// The 
-	{
-		float fValue = 0;
-		memset(RxBuffer, 0, sizeof(RxBuffer));	// Making the RxBuffer 0
-		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Reveices the buffer
-		send(ConnectionSocket, "ACK", sizeof("ACK"), 0);	// Sends an ackknowledgment
-		// Checks what the buffer's string has
-		if (strcmp(RxBuffer, "ACCELERATION BODY X") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer)); // Clearing RxBuffer
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);		// Receives the next piece of data
-			fValue = (float)atof(RxBuffer);	// Assigns the float value from the buffer
-			UpdateData(0, fValue);	// Calls to update
-			fValue = CalcAvg(0);		// Calculates the average
-		}
-		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			fValue = (float)atof(RxBuffer);
-			UpdateData(1, fValue);
-			fValue = CalcAvg(1);
-		}
-		else if (strcmp(RxBuffer, "ACCELERATION BODY Z") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			fValue = (float)atof(RxBuffer);
-			UpdateData(2, fValue);
-			fValue = CalcAvg(2);
-		}
-		else if (strcmp(RxBuffer, "TOTAL WEIGHT") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			fValue = (float)atof(RxBuffer);
-			UpdateData(3, fValue);
-			fValue = CalcAvg(3);
-		}
-		else if (strcmp(RxBuffer, "PLANE ALTITUDE") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			fValue = (float)atof(RxBuffer);
-			UpdateData(4, fValue);
-			fValue = CalcAvg(4);
-		}
-		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			fValue = (float)atof(RxBuffer);
-			UpdateData(5, fValue);
-			fValue = CalcAvg(5);
-		}
-		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			fValue = (float)atof(RxBuffer);
-			UpdateData(6, fValue);
-			fValue = CalcAvg(6);
-		}
-		else
-		{
-			// Missing time stamp -- will lead to the time stampe being printed at 0.0000 
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			fValue = 0.0;
+	while (true) {
+		ConnectionSocket = SOCKET_ERROR;
+		ConnectionSocket = accept(ServerSocket, NULL, NULL);
+		if (ConnectionSocket == SOCKET_ERROR) {
+			cerr << "Failed to accept connection." << endl;
+			continue;
 		}
 
-		// Sends the average back to the client
-		char Tx[128];
-		sprintf_s(Tx, "%f", fValue);
-		send(ConnectionSocket, Tx, sizeof(Tx), 0);
+		thread clientThread(ReceiveData, ConnectionSocket);
+		clientThread.detach();
 	}
 
-	closesocket(ConnectionSocket);	//closes incoming socket
 	closesocket(ServerSocket);	    //closes server socket	
 	WSACleanup();					//frees Winsock resources
 
 	return 1;
 }
 
-// 
+
+void ReceiveData(SOCKET ConnectionSocket)
+{
+
+	char RxBuffer[30] = {}; // buffer to store incoming packet
+	int bytesReceived = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0); // receive packet from client
+
+	// Add a plane id to
+	string s(RxBuffer);
+	PlaneConsumption plane(s);
+
+	while (bytesReceived > 0) {
+		int bytesReceived = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+
+		if (bytesReceived == SOCKET_ERROR || bytesReceived == 0){
+			cout << "Client disconnected " << endl;
+			closesocket(ConnectionSocket);
+			return;
+		}
+
+
+		string::size_type pos = s.find_first_of(',');	// Gets the date 
+		string token = s.substr(0, pos);
+
+		int epochTime = stoi(token);	// Obtains the epochtime
+
+		chrono::system_clock::time_point tp = chrono::system_clock::time_point(chrono::seconds(epochTime));	// Converts epoch time to a date time
+		time_t date = chrono::system_clock::to_time_t(tp);
+
+		pos = s.find_first_of(',');	// Gets the data
+		token = s.substr(0, pos + 1);
+
+
+		float data = stof(token);
+
+		// calcualte the average 
+		plane.calcAverage(date, data);
+
+	}
+
+	// Close connection socket
+	closesocket(ConnectionSocket);
+}
+
+ 
 void UpdateData(unsigned int uiIndex, float value)
 {
 	// First time a value is entered will configure the column

@@ -3,9 +3,11 @@
 #include "PlaneConsumption.h"
 #include <time.h>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <chrono>
+using namespace std;
 
 PlaneConsumption::PlaneConsumption(string PlaneId) {
 	this->PlaneId = PlaneId;
@@ -35,16 +37,16 @@ void PlaneConsumption::SaveToFile()
 	auto end = std::chrono::system_clock::now();
 	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
 
+	char buffer[80];
+	std::strftime(buffer, 80, "%Y-%m-%d_%H-%M-%S", std::localtime(&end_time));
 
 	std::ostringstream oss;
-	oss << this->PlaneId << "_" << this->StartTime << "_" 
-		<< std::ctime(&end_time) << ".txt";
+	oss << this->PlaneId << "_" << buffer << ".txt";
 
 	std::string filename = oss.str();
 
-	fstream file_out;
+	std::ofstream file_out(filename);
 
-	file_out.open(filename, std::ios_base::out);
 	if (!file_out.is_open()) {
 		cout << "failed to open " << filename << '\n';
 	}

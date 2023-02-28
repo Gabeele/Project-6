@@ -4,6 +4,7 @@
 #include <string>
 #include "PlaneConsumption.h"
 #include <chrono>
+#include <stdio.h>
 
 #pragma comment(lib, "Ws2_32.lib")
 using namespace std;
@@ -71,15 +72,11 @@ void ReceiveData(SOCKET ConnectionSocket)
 		memset(RxBuffer, '\0', sizeof(RxBuffer));
 		int bytesReceived = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 
-		if (bytesReceived == SOCKET_ERROR || bytesReceived == 0) {
-			cout << "Client disconnected " << endl;
-			closesocket(ConnectionSocket);
+		if (bytesReceived == SOCKET_ERROR || bytesReceived == 0) 
 			break;
-		}
-		else
-		{
-			send(ConnectionSocket, "ACK", sizeof("ACK"), 0);	// Sends an ackknowledgment
-		}
+	
+
+		send(ConnectionSocket, "ACK", sizeof("ACK"), 0);	// Sends an ackknowledgment
 
 		string s2(RxBuffer);
 
@@ -100,6 +97,9 @@ void ReceiveData(SOCKET ConnectionSocket)
 		plane.calcAverage(date, data);
 
 	}
+
+	cout << "Client disconnected " << endl;
+	closesocket(ConnectionSocket);
 
 	plane.SaveToFile();
 

@@ -1,2 +1,0 @@
-ID: JX583
-Fuel consumption: 60.9lbs/s

@@ -47,10 +47,9 @@ int main()
         WSACleanup();
         return 1;
     }
-    else
-    {
-        recv(ClientSocket, Rx, sizeof(Rx), 0);		// Waits for response
-    }
+
+    recv(ClientSocket, Rx, sizeof(Rx), 0);		// Waits for response
+    
 
     // consumer header line
     string line;
@@ -75,15 +74,17 @@ int main()
             WSACleanup();
             return 1;
         }
-        else
-        {
-            recv(ClientSocket, Rx, sizeof(Rx), 0);		// Waits for response
-        }
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        recv(ClientSocket, Rx, sizeof(Rx), 0);		// Waits for response
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        cout << "Sent Data" << endl;
     } 
 
+    cout << "Completed" << endl;
+
     dataFile.close();
+
     closesocket(ClientSocket);
     WSACleanup();
     return 0;

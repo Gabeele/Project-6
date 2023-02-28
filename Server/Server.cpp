@@ -61,36 +61,37 @@ int main()
 void ReceiveData(SOCKET ConnectionSocket)
 {
 
+	std::cout << "Recving data on thread " << std::this_thread::get_id() << std::endl;
+
 	char RxBuffer[30] = {}; // buffer to store incoming packet
 	int bytesReceived = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0); // receive packet from client
 	send(ConnectionSocket, "ACK", sizeof("ACK"), 0);	// Sends an ackknowledgment
+	std::cout << std::this_thread::get_id() << " Sent data" << endl;
+
 	// Add a plane id to
 	string s(RxBuffer);
 	PlaneConsumption plane(s);
 
 	while (true) {
 		memset(RxBuffer, '\0', sizeof(RxBuffer));
-		int bytesReceived = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 
+		int bytesReceived = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 		if (bytesReceived == SOCKET_ERROR || bytesReceived == 0) 
 			break;
+		std::cout << std::this_thread::get_id()  << " Recived data" << endl;
 	
-
 		send(ConnectionSocket, "ACK", sizeof("ACK"), 0);	// Sends an ackknowledgment
+		std::cout << std::this_thread::get_id() << " Sent data" << endl;
 
 		string s2(RxBuffer);
-
 		string::size_type pos = s2.find_first_of(',');	// Gets the date 
 		string token = s2.substr(0, pos);
 
 		int epochTime = stoi(token);	// Obtains the epochtime
-
 		chrono::system_clock::time_point tp = chrono::system_clock::time_point(chrono::seconds(epochTime));	// Converts epoch time to a date time
 		time_t date = chrono::system_clock::to_time_t(tp);
 
 		token = s2.substr(pos+1, s2.length()); // get the weight
-
-
 		float data = stof(token);
 
 		// calcualte the average 
@@ -98,7 +99,8 @@ void ReceiveData(SOCKET ConnectionSocket)
 
 	}
 
-	cout << "Client disconnected " << endl;
+	std::cout << std::this_thread::get_id()<<  " Client disconnected " << endl;
+
 	closesocket(ConnectionSocket);
 
 	plane.SaveToFile();

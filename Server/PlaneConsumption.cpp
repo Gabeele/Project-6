@@ -11,7 +11,7 @@ using namespace std;
 
 PlaneConsumption::PlaneConsumption(string PlaneId) {
 	this->PlaneId = PlaneId;
-	cout << "ID: " << this->PlaneId;
+	cout << "ID: " << this->PlaneId << endl;
 
 }
 
@@ -34,6 +34,7 @@ void PlaneConsumption::calcAverage(time_t date, float weight)
 
 void PlaneConsumption::SaveToFile()
 {
+	cout << "Writing to file" << endl;
 	auto end = std::chrono::system_clock::now();
 	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
 

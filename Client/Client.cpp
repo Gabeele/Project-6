@@ -26,7 +26,7 @@ int main()
 	SvrAddr.sin_addr.s_addr = inet_addr("127.0.0.1");	//Localhost
 	connect(ClientSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
 	
-    ifstream dataFile("DataFile4.txt");
+    ifstream dataFile("Telem_czba-cykf-pa28-w2_2023_3_1 12_31_27.txt");
 
     // Check if the file is open and readable
     if (!dataFile.is_open()) {

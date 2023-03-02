@@ -38,6 +38,9 @@
     <Text Include="DataFile4.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="Telem_czba-cykf-pa28-w2_2023_3_1 12_31_27.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Logger.h">

@@ -1,0 +1,3 @@
+ID: JX583
+Fuel consumption: -2.06671e-08lbs/s
+Flight time: -1672767335 s

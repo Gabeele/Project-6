@@ -59,6 +59,10 @@ int main()
     // send data rows to server
     while (getline(dataFile, line)) {
 
+        if (line.empty()) {
+            break;
+        }
+
         // get time in seconds since epoch
         string::size_type pos = line.find_first_of(',');	// Gets the date 
         string token = line.substr(0, pos);
